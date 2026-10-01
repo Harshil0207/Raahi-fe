@@ -134,3 +134,43 @@ export const CATEGORY_LABEL = {
 
 export const categoryLabel = (key) =>
   CATEGORY_LABEL[key] || String(key || '').replace(/_/g, ' ').toLowerCase();
+
+/**
+ * Rider verification, mirroring `backend/src/constants/riderVerification.js`.
+ *
+ * GRANDFATHERED is in this list because the console has to DISPLAY it — it
+ * marks riders who predate verification and are allowed to work without ever
+ * having been reviewed. It is deliberately absent from `VERIFICATION_SETTABLE`:
+ * the server rejects an admin trying to set it, so offering the button would
+ * only produce an error.
+ */
+export const VERIFICATION = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  GRANDFATHERED: 'GRANDFATHERED'
+};
+
+export const VERIFICATION_LABEL = {
+  PENDING: 'Waiting for review',
+  APPROVED: 'Approved',
+  REJECTED: 'Not approved',
+  GRANDFATHERED: 'Approved before review existed'
+};
+
+export const VERIFICATION_TONE = {
+  PENDING: 'warning',
+  APPROVED: 'success',
+  REJECTED: 'danger',
+  GRANDFATHERED: 'neutral'
+};
+
+/** The statuses that let a rider go online — the same pair the server uses. */
+export const VERIFICATION_CAN_WORK = [VERIFICATION.APPROVED, VERIFICATION.GRANDFATHERED];
+
+/** What an admin may set. Excludes the migration marker. */
+export const VERIFICATION_SETTABLE = [
+  VERIFICATION.APPROVED,
+  VERIFICATION.REJECTED,
+  VERIFICATION.PENDING
+];

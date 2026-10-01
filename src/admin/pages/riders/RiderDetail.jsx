@@ -5,6 +5,7 @@ import { PowerOff } from 'lucide-react';
 import { PageHeader } from '@/admin/components/common/PageHeader';
 import { DetailList, DetailRow } from '@/admin/components/common/DetailRow';
 import { AccountActions } from '@/admin/components/users/AccountActions';
+import { RiderVerification } from '@/admin/components/users/RiderVerification';
 import { RideHistoryList } from '@/admin/components/users/RideHistoryList';
 import { ComplaintList } from '@/admin/components/complaints/ComplaintList';
 import { RiderFinance } from '@/admin/components/finance/RiderFinance';
@@ -17,7 +18,13 @@ import { useAsync } from '@/admin/hooks/useAsync';
 import { useAuth } from '@/admin/hooks/useAuth';
 import * as riderApi from '@/admin/services/rider.api';
 import { PERMISSIONS } from '@/admin/constants/permissions';
-import { RIDE_STATUS_LABEL, RIDE_STATUS_TONE } from '@/admin/constants/status';
+import {
+  RIDE_STATUS_LABEL,
+  RIDE_STATUS_TONE,
+  VERIFICATION_CAN_WORK,
+  VERIFICATION_LABEL,
+  VERIFICATION_TONE
+} from '@/admin/constants/status';
 import {
   compactMoney,
   formatDateTime,
@@ -76,6 +83,16 @@ export default function RiderDetail() {
         description={user?.email}
         actions={
           <>
+            {/* Shown beside the online badge rather than only in the card
+                below, because "offline" and "not allowed to work" look
+                identical from the top of this page otherwise. Suppressed once
+                the rider is cleared, where it would just be noise. */}
+            {!VERIFICATION_CAN_WORK.includes(rider.verificationStatus) && (
+              <Badge tone={VERIFICATION_TONE[rider.verificationStatus] || 'neutral'} dot>
+                {VERIFICATION_LABEL[rider.verificationStatus] || rider.verificationStatus}
+              </Badge>
+            )}
+
             <Badge tone={rider.isOnline ? 'success' : 'neutral'} dot>
               {rider.isOnline ? (rider.activeRideId ? 'On a ride' : 'Online and free') : 'Offline'}
             </Badge>
@@ -158,6 +175,15 @@ export default function RiderDetail() {
 
       <div className="grid gap-4 xl:grid-cols-3">
         <div className="space-y-4 xl:col-span-1">
+          {/* First in the column: for a waiting rider this is the only thing
+              on the page anyone needs, and the vehicle and licence details it
+              is judged against sit directly beneath it. */}
+          <RiderVerification
+            rider={rider}
+            canUpdate={can(PERMISSIONS.RIDERS_UPDATE)}
+            onChanged={refetch}
+          />
+
           <Card>
             <CardHeader title="Profile" />
             <CardBody className="pt-1">

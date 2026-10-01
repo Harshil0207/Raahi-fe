@@ -9,6 +9,7 @@ import { useAsync } from '@/admin/hooks/useAsync';
 import { useListQuery } from '@/admin/hooks/useListQuery';
 import * as riderApi from '@/admin/services/rider.api';
 import { formatDate, formatRelative, plural } from '@/admin/utils/format';
+import { VERIFICATION, VERIFICATION_LABEL, VERIFICATION_TONE } from '@/admin/constants/status';
 
 /**
  * The rider fleet.
@@ -108,6 +109,22 @@ export default function Riders() {
       render: (rider) => <span className="text-muted">{formatDate(rider.createdAt)}</span>
     },
     {
+      key: 'verification',
+      header: 'Verification',
+      width: '8.5rem',
+      render: (rider) => (
+        <Badge tone={VERIFICATION_TONE[rider.verificationStatus] || 'neutral'}>
+          {/* The short word, not the sentence used on the detail page: a
+              table cell has no room for "Approved before review existed". */}
+          {rider.verificationStatus === VERIFICATION.PENDING
+            ? 'Waiting'
+            : rider.verificationStatus === VERIFICATION.REJECTED
+              ? 'Rejected'
+              : 'Approved'}
+        </Badge>
+      )
+    },
+    {
       key: 'account',
       header: 'Account',
       width: '6.5rem',
@@ -129,6 +146,20 @@ export default function Riders() {
         searchPlaceholder="Name, email or phone…"
         onReset={reset}
         filters={[
+          {
+            // First, because it is the only filter attached to a queue of work:
+            // somebody signed up and is waiting to hear back.
+            key: 'verificationStatus',
+            label: 'Verification',
+            value: read('verificationStatus', ''),
+            onChange: (value) => setFilter('verificationStatus', value),
+            options: [
+              { value: VERIFICATION.PENDING, label: 'Waiting for review' },
+              { value: VERIFICATION.APPROVED, label: 'Approved' },
+              { value: VERIFICATION.REJECTED, label: 'Not approved' },
+              { value: VERIFICATION.GRANDFATHERED, label: 'Never reviewed' }
+            ]
+          },
           {
             key: 'isOnline',
             label: 'Online',
