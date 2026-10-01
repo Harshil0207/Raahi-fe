@@ -1,6 +1,6 @@
-# Hayabusa — customer & rider app
+# Raahi — customer & rider app
 
-React + Vite frontend for the Hayabusa ride-booking backend. One codebase serves
+React + Vite frontend for the Raahi ride-booking backend. One codebase serves
 both sides: customers book and track rides, riders go online and drive them.
 Which app you get is decided by the role on your account, not by the URL you
 visit.
