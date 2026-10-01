@@ -1,0 +1,13 @@
+node_modules
+dist
+dist-ssr
+*.local
+# Every per-environment file, so a .env.production or a .env.backup cannot be
+# committed either — only the example is allowed through. The project root has
+# the same rules, but that file is outside this repository and does not apply
+# here, which is how a .env.bak-ip ended up tracked.
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log

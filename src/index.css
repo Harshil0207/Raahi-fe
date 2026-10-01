@@ -1,0 +1,399 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'leaflet/dist/leaflet.css';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/**
+ * Raahi's visual language: high contrast, and almost no colour.
+ *
+ * Light is white with black on it; dark is black with white on it. The primary
+ * action is the strongest thing on the screen in both, because it is the same
+ * ink as the text rather than a hue competing with it.
+ *
+ * Colour is reserved for meaning and nothing else — a state that is good, one
+ * that needs attention, one that is wrong, and the live parts of a trip. A
+ * neutral interface makes those four register instantly; an interface already
+ * full of colour cannot.
+ */
+@theme {
+  /* A true neutral ramp. Not blue-leaning: a tint here spreads to every
+     surface and softens the contrast the whole design depends on. */
+  --color-graphite-50: #fafafa;
+  --color-graphite-100: #f4f4f5;
+  --color-graphite-200: #e4e4e7;
+  --color-graphite-300: #d4d4d8;
+  --color-graphite-400: #a1a1aa;
+  --color-graphite-500: #71717a;
+  --color-graphite-600: #52525b;
+  --color-graphite-700: #3f3f46;
+  --color-graphite-800: #27272a;
+  --color-graphite-900: #18181b;
+  --color-graphite-950: #09090b;
+
+  /* Ink. The primary action wears this, which is why there is no accent hue. */
+  --color-ink: #0a0a0a;
+  --color-paper: #ffffff;
+
+  /* Meaning, and only meaning. */
+  --color-positive: #15803d;
+  --color-positive-bright: #22c55e;
+  --color-caution: #b45309;
+  --color-caution-bright: #f59e0b;
+  --color-critical: #b91c1c;
+  --color-critical-bright: #ef4444;
+
+  /* The live parts of a trip: the drawn route and the moving vehicle. These
+     stay coloured because they sit on a map, where ink disappears. */
+  --color-route: #2563eb;
+  --color-route-bright: #60a5fa;
+
+  --radius-card: 1.125rem;
+  --radius-sheet: 1.75rem;
+  --radius-pill: 999px;
+
+  --font-sans: 'Inter var', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+/**
+ * Semantic tokens. Components name these, never a raw colour — which is what
+ * keeps one accent change from turning into a hunt through forty files.
+ */
+@layer base {
+  :root {
+    --background: var(--color-paper);
+    --surface: var(--color-paper);
+    --surface-elevated: var(--color-paper);
+    --surface-sunken: var(--color-graphite-100);
+
+    --glass-tint: 255 255 255;
+    --glass-alpha: 0.62;
+    --glass-border: rgb(15 20 35 / 0.1);
+    --glass-specular: rgb(255 255 255 / 0.9);
+
+    --text: var(--color-ink);
+    --text-muted: var(--color-graphite-600);
+    --text-faint: var(--color-graphite-500);
+    --border: var(--color-graphite-200);
+
+    /* The primary action is ink on paper. Nothing on the screen is stronger,
+       which is the point: the next step should be the most obvious thing. */
+    --accent: var(--color-ink);
+    --accent-hover: var(--color-graphite-800);
+    --accent-contrast: var(--color-paper);
+    --accent-wash: color-mix(in oklab, var(--color-ink) 6%, transparent);
+
+    --success: var(--color-positive);
+    --warning: var(--color-caution);
+    --danger: var(--color-critical);
+
+    /* Tints and edges are mixed from the status colours rather than written out
+       again, so changing a status colour changes everything that echoes it. */
+    --success-wash: color-mix(in oklab, var(--success) 12%, transparent);
+    --success-edge: color-mix(in oklab, var(--success) 30%, transparent);
+    --warning-wash: color-mix(in oklab, var(--warning) 14%, transparent);
+    --warning-edge: color-mix(in oklab, var(--warning) 30%, transparent);
+    --danger-wash: color-mix(in oklab, var(--danger) 12%, transparent);
+    --danger-edge: color-mix(in oklab, var(--danger) 28%, transparent);
+    --danger-wash-strong: color-mix(in oklab, var(--danger) 20%, transparent);
+
+    --map-overlay: rgb(255 255 255 / 0.78);
+    /* Blue on a map, because ink vanishes into the roads underneath it. */
+    --map-route: var(--color-route);
+    --map-shade: 0;
+
+    --rider-status: var(--color-positive);
+    --customer-status: var(--color-ink);
+    --rider-wash: color-mix(in oklab, var(--rider-status) 14%, transparent);
+    --customer-wash: color-mix(in oklab, var(--customer-status) 14%, transparent);
+
+    --shadow-raise: 0 10px 30px -18px rgb(11 14 24 / 0.5);
+    --shadow-float: 0 14px 34px -16px rgb(11 14 24 / 0.35);
+    --shadow-sheet: 0 -16px 48px -24px rgb(11 14 24 / 0.4);
+  }
+
+  .dark {
+    --background: #000000;
+    --surface: var(--color-graphite-950);
+    --surface-elevated: var(--color-graphite-900);
+    --surface-sunken: var(--color-graphite-900);
+
+    --glass-tint: 255 255 255;
+    --glass-alpha: 0.07;
+    --glass-border: rgb(255 255 255 / 0.13);
+    --glass-specular: rgb(255 255 255 / 0.22);
+
+    --text: #fafafa;
+    --text-muted: var(--color-graphite-400);
+    --text-faint: var(--color-graphite-500);
+    --border: var(--color-graphite-800);
+
+    /* Mirrored: paper on ink. */
+    --accent: #fafafa;
+    --accent-hover: var(--color-graphite-200);
+    --accent-contrast: var(--color-ink);
+    --accent-wash: color-mix(in oklab, #fafafa 10%, transparent);
+
+    /* Brighter on black: the muted versions above are for white backgrounds. */
+    --success: var(--color-positive-bright);
+    --warning: var(--color-caution-bright);
+    --danger: var(--color-critical-bright);
+
+    --map-overlay: rgb(0 0 0 / 0.76);
+    --map-route: var(--color-route-bright);
+    --map-shade: 1;
+
+    --rider-status: var(--color-positive-bright);
+    --customer-status: #fafafa;
+
+    --shadow-raise: 0 12px 34px -20px rgb(0 0 0 / 0.85);
+    --shadow-float: 0 16px 40px -18px rgb(0 0 0 / 0.7);
+    --shadow-sheet: 0 -18px 50px -26px rgb(0 0 0 / 0.8);
+  }
+
+  * {
+    border-color: var(--border);
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    background: var(--background);
+    color: var(--text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior-y: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* Figures that change in place must not reflow the line around them. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+  }
+}
+
+@layer utilities {
+  /**
+   * The page-change transition.
+   *
+   * CSS rather than a JS animation library, deliberately. This was a framer
+   * `AnimatePresence` with an `initial`/`animate` pair, and on a route whose
+   * module had not been fetched yet the enter animation never fired — the page
+   * rendered fully and stayed at `opacity: 0` for ever. A blank screen with a
+   * working page behind it.
+   *
+   * A keyframe cannot get into that state: it is declarative, it starts when
+   * the element is inserted, and there is no presence bookkeeping to
+   * desynchronise. The element is keyed on the pathname so a navigation gives
+   * React a fresh node, which replays it. `both` holds the final frame, so
+   * even a dropped frame or a backgrounded tab ends fully opaque.
+   */
+  @keyframes raahi-page-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-in {
+    animation: raahi-page-in 230ms var(--ease-out-soft) both;
+  }
+
+  /* Reduced motion keeps the fade and drops the movement, rather than losing
+     the transition altogether — a hard cut between pages is its own jolt. */
+  @media (prefers-reduced-motion: reduce) {
+    .page-in {
+      animation: none;
+    }
+  }
+
+  :root[data-reduced-motion] .page-in {
+    animation: none;
+  }
+
+  /**
+   * Two entrances that used to be framer-motion, moved to CSS.
+   *
+   * WHY: these live in components mounted on every single page load — the
+   * offline banner, the page loader, the auth layout — so importing an
+   * animation library for them put 40 KB of it (62% of which Lighthouse
+   * measured as unused on the landing page) in front of the first paint. Each
+   * of these is one fade, or one fade and a slide. A keyframe does that.
+   *
+   * framer-motion is untouched everywhere it earns its place: the nav pill's
+   * shared-layout slide, the bottom sheets, and the two dozen route-level
+   * components that ship inside their own chunks.
+   */
+  @keyframes raahi-drop-in {
+    from { opacity: 0; transform: translateY(-40px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .drop-in {
+    animation: raahi-drop-in 220ms var(--ease-out-soft) both;
+  }
+
+  @keyframes raahi-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .fade-in {
+    animation: raahi-fade-in 180ms ease-out both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .drop-in,
+    .fade-in {
+      animation: none;
+    }
+  }
+
+  :root[data-reduced-motion] .drop-in,
+  :root[data-reduced-motion] .fade-in {
+    animation: none;
+  }
+
+  /* The loading caption, crossfading as the message changes.
+     Keyed on the text in React, so each message is a fresh node and the
+     animation replays — no JS state that can stick half-faded. */
+  @keyframes raahi-caption-in {
+    from { opacity: 0; transform: translateY(3px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .caption-in {
+    animation: raahi-caption-in 320ms var(--ease-out-soft) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .caption-in { animation: raahi-caption-in 200ms linear both; }
+  }
+
+  /* The assistant's thinking indicator.
+     CSS rather than JS for the same reason the page transition is: a JS
+     animation that stops mid-cycle leaves three dots frozen on screen, which
+     reads as a hang — the one thing a "working on it" indicator must not do. */
+  @keyframes raahi-thinking {
+    0%, 80%, 100% { opacity: 0.28; transform: translateY(0); }
+    40%           { opacity: 1;    transform: translateY(-2px); }
+  }
+
+  .assistant-dot {
+    animation: raahi-thinking 1.15s var(--ease-out-soft) infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .assistant-dot {
+      animation: none;
+      opacity: 0.6;
+    }
+  }
+
+  .bg-app { background: var(--background); }
+  .bg-surface { background: var(--surface); }
+  .bg-elevated { background: var(--surface-elevated); }
+  .bg-sunken { background: var(--surface-sunken); }
+
+  .text-body { color: var(--text); }
+  .text-muted { color: var(--text-muted); }
+  .text-faint { color: var(--text-faint); }
+  .text-accent { color: var(--accent); }
+
+  .border-hair { border-color: var(--border); }
+
+  .pt-safe { padding-top: max(env(safe-area-inset-top), 0.75rem); }
+  .pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 0.75rem); }
+  /* Clears the floating tab bar on mobile. From `md` the nav is a left rail,
+     so the allowance drops back to ordinary page padding. */
+  .pb-safe-nav { padding-bottom: calc(env(safe-area-inset-bottom) + 5.5rem); }
+
+  @media (min-width: 48rem) {
+    .pb-safe-nav { padding-bottom: 2rem; }
+  }
+}
+
+/* The route is drawn by Leaflet, outside React, so it takes its colours here. */
+.route-casing {
+  stroke: var(--background);
+  opacity: 0.35;
+}
+
+.route-line {
+  stroke: var(--map-route);
+  opacity: 0.95;
+}
+
+/* Leaflet ships light chrome; this settles it into either theme. */
+.leaflet-container {
+  background: var(--surface-sunken);
+  font-family: var(--font-sans);
+  outline: none;
+}
+
+.dark .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(185deg) brightness(0.93) contrast(0.86) saturate(0.55);
+}
+
+.leaflet-control-attribution {
+  background: var(--map-overlay) !important;
+  color: var(--text-faint) !important;
+  font-size: 10px !important;
+  padding: 1px 6px !important;
+  border-radius: 6px 0 0 0;
+}
+
+.leaflet-control-attribution a { color: var(--text-muted) !important; }
+.leaflet-control-zoom { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* The same, asked for in Settings rather than by the device. Written out rather
+   than merged into one selector list: a media query and an attribute selector
+   cannot share a rule without the whole rule being dropped by browsers that do
+   not understand one of them. */
+:root[data-reduced-motion] *,
+:root[data-reduced-motion] *::before,
+:root[data-reduced-motion] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Larger text and higher contrast, both asked for in Settings.
+
+   Text scales from the root so every rem-based size follows, and the few px
+   sizes the app uses are small labels that should not grow anyway. Contrast
+   strengthens the border token and drops the decorative glass tint, which is
+   where legibility is actually lost — not the text colour, which already meets
+   contrast in both themes. */
+:root[data-larger-text] {
+  font-size: 112.5%;
+}
+
+:root[data-high-contrast] {
+  --border: color-mix(in oklab, var(--text) 45%, transparent);
+  --text-muted: var(--text);
+  --glass-alpha: 0.95;
+}

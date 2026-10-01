@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5"
+    />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+
+    <!--
+      THE TAGS BELOW ARE THE ONES CRAWLERS ACTUALLY SEE.
+
+      This is a single-page app: the metadata the React `<Seo>` component sets is
+      correct for anyone with a browser, and for Google, which runs JavaScript.
+      It is invisible to every crawler that does not — which includes the
+      previewers behind WhatsApp, Facebook, Twitter, LinkedIn, Slack and iMessage.
+      They read the served HTML and nothing else.
+
+      So this head carries a complete, accurate, brand-level set, and the build
+      writes a copy of it per public route with that route's own title and
+      description baked in (see `plugins/seo.js`). Between them, a shared link
+      previews correctly whether or not anything runs.
+
+      `og:url`, the canonical and the structured data are injected at build time
+      only when VITE_PUBLIC_SITE_URL is configured, because a URL pointing at the
+      wrong host is worse than no URL at all.
+    -->
+    <title>Raahi — Modern Ride Booking Platform</title>
+    <meta
+      name="description"
+      content="Raahi is a modern ride-booking platform for customers and riders. Book rides, track trips, connect with riders, and manage your journeys with a smooth mobile-first experience."
+    />
+    <meta
+      name="keywords"
+      content="ride booking, cab booking, bike taxi, auto booking, car booking, parcel delivery, ride sharing, rider app, customer ride app, Raahi"
+    />
+    <meta name="application-name" content="Raahi" />
+    <meta name="author" content="Raahi" />
+    <meta name="robots" content="index, follow" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Raahi" />
+    <meta property="og:title" content="Raahi — Modern Ride Booking Platform" />
+    <meta
+      property="og:description"
+      content="Book rides with Raahi. Choose from bikes, autos and cars, track your rider in real time, and enjoy a smooth ride-booking experience."
+    />
+    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Raahi — modern ride booking for bikes, autos, cars and parcels"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Raahi — Modern Ride Booking Platform" />
+    <meta
+      name="twitter:description"
+      content="Book rides with Raahi. Choose from bikes, autos and cars, track your rider in real time, and enjoy a smooth ride-booking experience."
+    />
+    <meta name="twitter:image" content="/og-image.png" />
+    <meta
+      name="twitter:image:alt"
+      content="Raahi — modern ride booking for bikes, autos, cars and parcels"
+    />
+
+    <!-- The SVG is what modern browsers use; the .ico covers the rest. -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <script>
+      /**
+       * Carries anything saved under the old name across, then settles the
+       * theme — both before the first paint.
+       *
+       * The rename would otherwise sign every signed-in person out and lose
+       * their saved places and their theme, because all of it is keyed by
+       * product name in localStorage. This runs before any module, so the rest
+       * of the app only ever has to know the new prefix.
+       */
+      (function () {
+        try {
+          for (var i = localStorage.length - 1; i >= 0; i -= 1) {
+            var key = localStorage.key(i);
+            if (key && key.indexOf('hayabusa.') === 0) {
+              var moved = 'raahi.' + key.slice('hayabusa.'.length);
+              if (localStorage.getItem(moved) === null) {
+                localStorage.setItem(moved, localStorage.getItem(key));
+              }
+              localStorage.removeItem(key);
+            }
+          }
+        } catch (e) {
+          // Blocked storage: nothing to carry over, and nothing breaks.
+        }
+
+        // A saved choice wins; otherwise the device decides, because an app
+        // that ignores the system setting is an app fighting its user.
+        var dark = true;
+        var reduced = false;
+        try {
+          var saved = localStorage.getItem('raahi.theme');
+          var asks = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)').matches : true;
+          // 'system' is a real stored choice, not the absence of one — reading
+          // it as anything but "ask the device" pins the app to light.
+          dark = !saved || saved === 'system' ? asks : saved === 'dark';
+
+          var motion = localStorage.getItem('raahi.reducedMotion');
+          var asksQuiet = window.matchMedia
+            ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+            : false;
+          reduced = !motion || motion === 'system' ? asksQuiet : motion === 'on';
+        } catch (e) {
+          // Blocked storage: the defaults stand.
+        }
+        document.documentElement.classList.toggle('dark', dark);
+        // Set before first paint so the intro animation never starts and then
+        // stops once the app decides it should not have run.
+        document.documentElement.toggleAttribute('data-reduced-motion', reduced);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

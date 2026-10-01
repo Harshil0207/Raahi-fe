@@ -1,0 +1,168 @@
+/**
+ * The console's palette, scoped so it cannot reach the customer app.
+ *
+ * Both apps used to be separate builds, each with its own `:root` theme. In one
+ * app they would be two `:root` blocks fighting over the same names — the
+ * console's indigo-and-slate would repaint the customer screens, or the other
+ * way round, depending on import order. Four tokens genuinely conflicted
+ * (`--color-caution`, `--color-critical`, `--color-positive`, `--radius-card`).
+ *
+ * So every console variable lives under `.admin-scope`, the wrapper that
+ * `AdminApp` puts around the whole console. The shared utilities — `.bg-app`,
+ * `.text-body` and the rest — are defined once in `index.css` in terms of these
+ * same variable names, so inside the wrapper they resolve to the console's
+ * values and outside it to the customer app's. Nothing had to be renamed.
+ *
+ * There is no `@theme` here on purpose: the console's slate and indigo ramps
+ * are only ever read through `var()`, never as `bg-slate-200` utilities, so
+ * they need no Tailwind generation and can be plain custom properties.
+ */
+
+.admin-scope {
+  /* the console's own ramps */
+
+  --color-slate-25: #fbfcfd;
+  --color-slate-50: #f6f8fa;
+  --color-slate-100: #eef1f5;
+  --color-slate-200: #dfe4ea;
+  --color-slate-300: #c3cad5;
+  --color-slate-400: #8e99a9;
+  --color-slate-500: #667286;
+  --color-slate-600: #4a5364;
+  --color-slate-700: #333a48;
+  --color-slate-800: #21262f;
+  --color-slate-850: #191d25;
+  --color-slate-900: #12151b;
+  --color-slate-950: #0b0d11;
+
+  --color-indigo-300: #9cb5ff;
+  --color-indigo-400: #7495f5;
+  --color-indigo-500: #4b74ea;
+  --color-indigo-600: #3559d2;
+  --color-indigo-700: #2942a4;
+
+  --color-positive: #2fbf71;
+  --color-caution: #e8a33d;
+  --color-critical: #e5484d;
+  --color-info: #3c8ce0;
+  --color-violet: #8b5cf6;
+
+  --radius-card: 0.625rem;
+  --radius-field: 0.5rem;
+
+  --font-sans: 'Inter var', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* mapped onto the shared semantic names */
+
+    --background: var(--color-slate-50);
+    --surface: #ffffff;
+    --surface-elevated: #ffffff;
+    --surface-sunken: var(--color-slate-100);
+    --surface-hover: var(--color-slate-100);
+
+    --text: var(--color-slate-900);
+    --text-muted: var(--color-slate-600);
+    --text-faint: var(--color-slate-400);
+
+    --border: var(--color-slate-200);
+    --border-strong: var(--color-slate-300);
+
+    --accent: var(--color-indigo-600);
+    --accent-hover: var(--color-indigo-700);
+    --accent-contrast: #ffffff;
+    --accent-wash: color-mix(in oklab, var(--accent) 10%, transparent);
+
+    --success: var(--color-positive);
+    --warning: var(--color-caution);
+    --danger: var(--color-critical);
+    --info: var(--color-info);
+
+    --success-wash: color-mix(in oklab, var(--success) 12%, transparent);
+    --warning-wash: color-mix(in oklab, var(--warning) 14%, transparent);
+    --danger-wash: color-mix(in oklab, var(--danger) 12%, transparent);
+    --info-wash: color-mix(in oklab, var(--info) 12%, transparent);
+    --danger-edge: color-mix(in oklab, var(--danger) 30%, transparent);
+
+    /**
+     * Chart colours, chosen per mode rather than flipped.
+     *
+     * Every pair below was run through the palette validator against this
+     * mode's surface: CVD separation, normal-vision separation and 3:1 contrast
+     * all pass in light and dark. The success green is a darker step in light
+     * mode than in dark because the brand green is only 2.4:1 on white, which
+     * would make a completed-rides bar unreadable.
+     *
+     * `--chart-series-1/2` is the one genuinely categorical pair (cash vs UPI).
+     * `--chart-positive/neutral` is a status pairing — completed against
+     * cancelled — so it ships with a legend and direct labels, never colour alone.
+     */
+    --chart-series-1: #3559d2;
+    --chart-series-2: #eb6834;
+    --chart-positive: #199e70;
+    --chart-neutral: #667286;
+    --chart-grid: var(--color-slate-200);
+    --chart-track: var(--color-slate-100);
+
+    --shadow-card: 0 1px 2px rgb(11 13 17 / 0.05), 0 1px 3px rgb(11 13 17 / 0.06);
+    --shadow-raise: 0 4px 12px -4px rgb(11 13 17 / 0.12);
+    --shadow-float: 0 12px 32px -12px rgb(11 13 17 / 0.22);
+
+    color-scheme: light;
+}
+
+.dark .admin-scope,
+:root.dark .admin-scope {
+
+    --background: var(--color-slate-950);
+    --surface: var(--color-slate-900);
+    --surface-elevated: var(--color-slate-850);
+    --surface-sunken: #0e1116;
+    --surface-hover: var(--color-slate-800);
+
+    --text: #eaeef5;
+    --text-muted: #9aa5b6;
+    --text-faint: #6b7688;
+
+    --border: #242a34;
+    --border-strong: #323a47;
+
+    --accent: var(--color-indigo-500);
+    --accent-hover: var(--color-indigo-400);
+    --accent-contrast: #0b0d11;
+    --accent-wash: color-mix(in oklab, var(--accent) 16%, transparent);
+
+    --chart-series-1: #4b74ea;
+    --chart-series-2: #d95926;
+    --chart-positive: #26a869;
+    --chart-neutral: #667286;
+    --chart-grid: #232935;
+    --chart-track: #1b2029;
+
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3);
+    --shadow-raise: 0 4px 14px -4px rgb(0 0 0 / 0.45);
+    --shadow-float: 0 16px 40px -16px rgb(0 0 0 / 0.6);
+
+    color-scheme: dark;
+}
+
+@layer utilities {
+  .border-firm { border-color: var(--border-strong); }
+  .assistant-panel-in { animation: raahi-assistant-in 200ms var(--ease-out-soft) both; }
+  .assistant-panel-out { animation: raahi-assistant-out 170ms var(--ease-out-soft) both; }
+}
+
+@keyframes raahi-assistant-in {
+    from { opacity: 0; transform: translateY(10px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+@keyframes raahi-assistant-out {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to   { opacity: 0; transform: translateY(8px) scale(0.97); }
+  }
+@keyframes raahi-thinking {
+    0%, 80%, 100% { opacity: 0.28; transform: translateY(0); }
+    40%           { opacity: 1;    transform: translateY(-2px); }
+  }
