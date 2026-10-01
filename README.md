@@ -166,3 +166,8 @@ overflow and no console errors.
 Ride ratings, scheduled rides, fare breakdowns beyond distance, and push
 notifications. UPI shows the backend's 501 rather than a fake success — the
 frontend is ready for it the moment a gateway is wired up.
+
+
+
+Admin : admin@gmail.com
+password : Admin12345
